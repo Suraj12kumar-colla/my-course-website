@@ -22,15 +22,21 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// CREATE CODE
+// 🔥 CREATE CODE
 window.createCode = async function(){
+
+try{
 
 let code = document.getElementById("code").value;
 let expiry = document.getElementById("expiry").value;
 
-if(!code || !expiry){
-document.getElementById("status").innerText = "Fill all fields";
+if(!expiry){
+document.getElementById("status").innerText = "Select expiry date";
 return;
+}
+
+if(!code){
+code = Math.random().toString(36).substring(2,8).toUpperCase();
 }
 
 await setDoc(doc(db,"codes",code),{
@@ -39,16 +45,29 @@ expiry:expiry,
 createdAt:new Date().toISOString()
 });
 
-document.getElementById("status").innerText = "Code Created ✔";
+document.getElementById("status").innerText = "Code Created ✔: " + code;
+
+loadCodes();
+
+}catch(e){
+console.log(e);
+document.getElementById("status").innerText = "Error creating code";
+}
 
 }
 
-// LOAD ALL CODES
+// 🔥 LOAD CODES
 window.loadCodes = async function(){
+
+try{
 
 let snap = await getDocs(collection(db,"codes"));
 
 let html = "";
+
+if(snap.empty){
+html = "<p>No codes found</p>";
+}
 
 snap.forEach(docu=>{
 
@@ -70,15 +89,25 @@ html += `
 
 document.getElementById("codesList").innerHTML = html;
 
+}catch(e){
+console.log(e);
+document.getElementById("codesList").innerHTML = "Error loading codes";
 }
 
-// DELETE CODE
+}
+
+// 🔥 DELETE CODE
 window.deleteCode = async function(codeId){
+
+try{
 
 await deleteDoc(doc(db,"codes",codeId));
 
-alert("Code Deleted");
-
 loadCodes();
+
+}catch(e){
+alert("Delete failed");
+console.log(e);
+}
 
 }

@@ -34,5 +34,16 @@
 
 <script type="module" src="admin.js"></script>
 
+<!-- 🔥 FIX: auto load list on open -->
+<script>
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    if(typeof loadCodes === "function"){
+      loadCodes();
+    }
+  }, 1000);
+});
+</script>
+
 </body>
 </html>
