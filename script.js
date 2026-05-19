@@ -2,14 +2,16 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 
 import { 
 getAuth, 
-signInWithEmailAndPassword 
+signInWithEmailAndPassword,
+onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 import {
 getFirestore,
 doc,
 getDoc,
-updateDoc
+updateDoc,
+setDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -34,10 +36,10 @@ let code = document.getElementById("code").value;
 
 try{
 
-// 1. LOGIN USER
+// LOGIN
 await signInWithEmailAndPassword(auth,email,password);
 
-// 2. CHECK CODE
+// CODE CHECK
 const ref = doc(db,"codes",code);
 const snap = await getDoc(ref);
 
@@ -50,36 +52,42 @@ let data = snap.data();
 
 let today = new Date().toISOString().split("T")[0];
 
-// 3. EXPIRY CHECK
-if(data.expiry < today){
-document.getElementById("msg").innerText = "Code Expired";
-return;
-}
-
-// 4. USED CHECK
 if(data.used){
 document.getElementById("msg").innerText = "Code Already Used";
 return;
 }
 
-// 5. MARK CODE AS USED
-await updateDoc(ref,{
-used:true
-});
-
-// 6. GET USER DATA (ADMIN CHECK)
-const userRef = doc(db,"users",auth.currentUser.uid);
-const userSnap = await getDoc(userRef);
-
-// 👇 DEFAULT REDIRECT (safety fallback)
-let redirectPage = "dashboard.html";
-
-if(userSnap.exists() && userSnap.data().admin === true){
-redirectPage = "admin.html";
+if(data.expiry < today){
+document.getElementById("msg").innerText = "Code Expired";
+return;
 }
 
-// 🔥 FINAL REDIRECT (clean + secure)
-window.location.replace(redirectPage);
+// MARK CODE USED
+await updateDoc(ref,{ used:true });
+
+// 🔥 ANALYTICS SYSTEM (NEW)
+const user = auth.currentUser;
+
+const userRef = doc(db,"users",user.uid);
+const userSnap = await getDoc(userRef);
+
+if(userSnap.exists()){
+await updateDoc(userRef,{
+loginCount: (userSnap.data().loginCount || 0) + 1,
+lastLogin: new Date().toISOString(),
+email: user.email
+});
+}else{
+await setDoc(userRef,{
+loginCount: 1,
+lastLogin: new Date().toISOString(),
+email: user.email
+});
+}
+
+localStorage.setItem("login","true");
+
+window.location.href="dashboard.html";
 
 }catch(e){
 document.getElementById("msg").innerText = "Login Failed";
