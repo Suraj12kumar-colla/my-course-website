@@ -1,31 +1,141 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard</title>
-<link rel="stylesheet" href="style.css">
+<title>Dashboard - Education</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#0f0f0f;
+color:white;
+}
+
+/* TOP BAR */
+.topbar{
+background:#181818;
+padding:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 2px 10px rgba(0,0,0,0.5);
+}
+
+.topbar h2{
+margin:0;
+font-size:18px;
+}
+
+.logout{
+background:red;
+color:white;
+border:none;
+padding:8px 12px;
+border-radius:8px;
+cursor:pointer;
+}
+
+/* CONTAINER */
+.container{
+padding:20px;
+}
+
+/* SUBJECT GRID */
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+gap:15px;
+margin-top:20px;
+}
+
+.card{
+background:#1e1e1e;
+padding:20px;
+border-radius:12px;
+text-align:center;
+transition:0.3s;
+cursor:pointer;
+}
+
+.card:hover{
+background:#2a2a2a;
+transform:scale(1.03);
+}
+
+.card h3{
+margin:10px 0 0 0;
+}
+
+/* FOOTER */
+.footer{
+text-align:center;
+margin-top:30px;
+font-size:12px;
+color:gray;
+}
+</style>
+
 </head>
+
 <body>
 
+<!-- 🔐 AUTH CHECK -->
+<script>
+if(localStorage.getItem("login")!=="true"){
+window.location.href="index.html";
+}
+</script>
+
+<!-- TOP BAR -->
+<div class="topbar">
+<h2>📚 Student Dashboard</h2>
+<button class="logout" onclick="logout()">Logout</button>
+</div>
+
+<!-- CONTENT -->
 <div class="container">
-<h1>Subjects</h1>
 
-<div class="subject-box">
-<h2>Math</h2>
-<a href="math.html">
-<button>Open</button>
-</a>
+<h3>Welcome 👋</h3>
+<p>Select your subject to continue learning</p>
+
+<div class="grid">
+
+<div class="card" onclick="openSubject('math.html')">
+<h3>📘 Math</h3>
 </div>
 
-<div class="subject-box">
-<h2>Science</h2>
-<a href="science.html">
-<button>Open</button>
-</a>
+<div class="card" onclick="openSubject('science.html')">
+<h3>🔬 Science</h3>
+</div>
+
+<div class="card" onclick="openSubject('english.html')">
+<h3>📖 English</h3>
+</div>
+
+<div class="card" onclick="openSubject('computer.html')">
+<h3>💻 Computer</h3>
 </div>
 
 </div>
+
+<div class="footer">
+Education Platform • Secure Access System
+</div>
+
+</div>
+
+<script>
+function openSubject(page){
+window.location.href = page;
+}
+
+function logout(){
+localStorage.removeItem("login");
+window.location.href="index.html";
+}
+</script>
 
 </body>
 </html>
