@@ -3,7 +3,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import {
 getFirestore,
 doc,
-setDoc
+setDoc,
+getDocs,
+collection,
+deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -19,6 +22,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// CREATE CODE
 window.createCode = async function(){
 
 let code = document.getElementById("code").value;
@@ -31,9 +35,50 @@ return;
 
 await setDoc(doc(db,"codes",code),{
 used:false,
-expiry:expiry
+expiry:expiry,
+createdAt:new Date().toISOString()
 });
 
-document.getElementById("status").innerText = "Code Created Successfully";
+document.getElementById("status").innerText = "Code Created ✔";
+
+}
+
+// LOAD ALL CODES
+window.loadCodes = async function(){
+
+let snap = await getDocs(collection(db,"codes"));
+
+let html = "";
+
+snap.forEach(docu=>{
+
+let data = docu.data();
+
+html += `
+<div style="background:#222;padding:10px;margin:10px;border-radius:10px">
+
+<p><b>Code:</b> ${docu.id}</p>
+<p><b>Used:</b> ${data.used}</p>
+<p><b>Expiry:</b> ${data.expiry}</p>
+
+<button onclick="deleteCode('${docu.id}')">Delete</button>
+
+</div>
+`;
+
+});
+
+document.getElementById("codesList").innerHTML = html;
+
+}
+
+// DELETE CODE
+window.deleteCode = async function(codeId){
+
+await deleteDoc(doc(db,"codes",codeId));
+
+alert("Code Deleted");
+
+loadCodes();
 
 }

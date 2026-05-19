@@ -71,17 +71,15 @@ used:true
 const userRef = doc(db,"users",auth.currentUser.uid);
 const userSnap = await getDoc(userRef);
 
+// 👇 DEFAULT REDIRECT (safety fallback)
+let redirectPage = "dashboard.html";
+
 if(userSnap.exists() && userSnap.data().admin === true){
-
-// 👑 ADMIN
-window.location.href = "admin.html";
-
-}else{
-
-// 👤 NORMAL USER
-window.location.href = "dashboard.html";
-
+redirectPage = "admin.html";
 }
+
+// 🔥 FINAL REDIRECT (clean + secure)
+window.location.replace(redirectPage);
 
 }catch(e){
 document.getElementById("msg").innerText = "Login Failed";

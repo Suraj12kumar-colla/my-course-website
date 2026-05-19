@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Admin Panel</title>
+<title>Pro Admin Panel</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -10,15 +10,25 @@
 
 <div class="container">
 
-<h1>Admin Panel</h1>
+<h1>Admin Panel Pro</h1>
 
-<input type="text" id="code" placeholder="Create Access Code">
+<h3>Create New Code</h3>
+
+<input type="text" id="code" placeholder="Enter Code">
 
 <input type="date" id="expiry">
 
 <button onclick="createCode()">Create Code</button>
 
 <p id="status"></p>
+
+<hr>
+
+<h3>All Active Codes</h3>
+
+<button onclick="loadCodes()">Refresh List</button>
+
+<div id="codesList"></div>
 
 </div>
 
