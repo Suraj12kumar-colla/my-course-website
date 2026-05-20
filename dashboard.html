@@ -34,14 +34,77 @@ top:0;
 z-index:100;
 }
 
-.logo{
-height:45px;
-border-radius:10px;
+.menu{
+font-size:30px;
+cursor:pointer;
+font-weight:bold;
 }
 
 .user{
 font-size:18px;
 font-weight:bold;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+position:fixed;
+top:0;
+left:-280px;
+width:280px;
+height:100%;
+background:white;
+z-index:9999;
+transition:0.3s;
+padding:20px;
+overflow:auto;
+}
+
+.sidebar-top{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:30px;
+}
+
+.sidebar-top h2{
+font-size:22px;
+color:#888;
+}
+
+.close-btn{
+font-size:30px;
+cursor:pointer;
+}
+
+.menu-item{
+padding:16px;
+margin-top:12px;
+border-radius:12px;
+font-size:20px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.menu-item:hover{
+background:#f2f2f2;
+}
+
+.active-menu{
+background:#dff8f3;
+color:#39d0b1;
+font-weight:bold;
+}
+
+.overlay{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+display:none;
+z-index:999;
 }
 
 /* HOME PAGE */
@@ -150,11 +213,20 @@ font-size:18px;
 
 .subject-card{
 background:white;
-padding:18px;
-border-radius:15px;
-margin-top:15px;
-box-shadow:0 2px 10px rgba(0,0,0,0.1);
+padding:28px;
+border-radius:18px;
+margin-top:20px;
+box-shadow:0 4px 15px rgba(0,0,0,0.12);
 cursor:pointer;
+transition:0.3s;
+}
+
+.subject-card h3{
+font-size:24px;
+}
+
+.subject-card:active{
+transform:scale(0.98);
 }
 
 .subject-content{
@@ -164,17 +236,20 @@ padding-top:10px;
 
 .folder{
 background:#f5f5f5;
-padding:12px;
-border-radius:10px;
-margin-top:10px;
+padding:18px;
+border-radius:14px;
+margin-top:15px;
+font-size:20px;
+font-weight:bold;
 }
 
 .file{
 background:white;
-padding:10px;
-margin-top:8px;
-border-radius:8px;
+padding:16px;
+margin-top:12px;
+border-radius:12px;
 border:1px solid #ddd;
+font-size:18px;
 }
 
 /* DEMO */
@@ -211,14 +286,52 @@ cursor:pointer;
 
 <body>
 
+<!-- SIDEBAR -->
+
+<div id="sidebar" class="sidebar">
+
+<div class="sidebar-top">
+
+<h2>Study Material</h2>
+
+<span class="close-btn" onclick="closeSidebar()">✕</span>
+
+</div>
+
+<div class="menu-item active-menu">
+📚 My Course
+</div>
+
+<div class="menu-item">
+🛒 Purchase History
+</div>
+
+<div class="menu-item">
+👤 My Profile
+</div>
+
+<div class="menu-item">
+📖 E-Books
+</div>
+
+<div class="menu-item">
+📝 Test Series
+</div>
+
+</div>
+
+<!-- OVERLAY -->
+
+<div id="overlay" class="overlay" onclick="closeSidebar()"></div>
+
 <!-- TOPBAR -->
 
 <div class="topbar">
 
-<img src="batch.jpg" class="logo">
+<div class="menu" onclick="openSidebar()">☰</div>
 
 <div class="user">
-Hi, Suraj 👤
+Hi, Student 👤
 </div>
 
 </div>
@@ -281,50 +394,19 @@ Demo Class
 
 <div id="overview" class="section" style="display:block;">
 
-<!-- TIMETABLE IMAGE -->
-
 <img src="timetable.jpg">
-
-<!-- PLANNER IMAGE -->
-
-<img src="planner.jpg">
 
 <div class="description">
 
-We will cover Science, Mathematics, Social Science, English (Both Course A & B), Hindi (Both Course A & B), AI/IT & Sanskrit for Class 10th students.
+We will cover Science, Mathematics, Social Science, English, Hindi, AI/IT & Sanskrit for Class 10th students.
+
 <br><br>
 
-This is a Live Interactive Course, and the complete syllabus will be covered by October.
+Live classes, recordings, notes, tests & doubt sessions included.
+
 <br><br>
 
-However, you will have access to the course until your board exams.
-<br><br>
-
-Note: English, Hindi, AI/IT & Sanskrit will be available in recorded mode.
-<br><br>
-
-Live Doubt-Solving Sessions will be conducted as part of this course.
-<br><br>
-
-Class Recordings will be available immediately after the live sessions.
-<br><br>
-
-Class Notes will be provided in PDF format.
-<br><br>
-
-Frequent Tests will be conducted to assess your progress.
-<br><br>
-
-The entire course will remain accessible until your board exams in 2027.
-<br><br>
-
-Classes start in April 2026.
-<br><br>
-
-This course price is for complete batch (not monthly)
-<br><br>
-
-This batch is non-refundable and non-transferable.
+Complete syllabus coverage till boards 2027.
 
 </div>
 
@@ -535,6 +617,22 @@ folder.style.display="none";
 }else{
 folder.style.display="block";
 }
+
+}
+
+function openSidebar(){
+
+document.getElementById("sidebar").style.left="0";
+
+document.getElementById("overlay").style.display="block";
+
+}
+
+function closeSidebar(){
+
+document.getElementById("sidebar").style.left="-280px";
+
+document.getElementById("overlay").style.display="none";
 
 }
 
