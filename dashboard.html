@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Aarambh Batch Dashboard</title>
+<title>Aarambh Dashboard</title>
 
 <style>
 
@@ -27,7 +27,7 @@ background:white;
 display:flex;
 align-items:center;
 justify-content:space-between;
-padding:0 15px;
+padding:0 20px;
 box-shadow:0 2px 10px rgba(0,0,0,0.1);
 position:sticky;
 top:0;
@@ -39,128 +39,38 @@ height:45px;
 border-radius:10px;
 }
 
-.menu{
-font-size:28px;
-cursor:pointer;
-}
-
 .user{
 font-size:18px;
 font-weight:bold;
 }
 
-/* SIDEBAR */
-
-.sidebar{
-position:fixed;
-top:0;
-left:-280px;
-width:280px;
-height:100%;
-background:white;
-z-index:9999;
-transition:0.3s;
-padding:20px;
-overflow:auto;
-}
-
-.sidebar-top{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:30px;
-}
-
-.sidebar-top h2{
-font-size:22px;
-color:#888;
-}
-
-.close-btn{
-font-size:30px;
-cursor:pointer;
-}
-
-.menu-item{
-padding:16px;
-margin-top:12px;
-border-radius:12px;
-font-size:20px;
-cursor:pointer;
-transition:0.3s;
-}
-
-.menu-item:hover{
-background:#f2f2f2;
-}
-
-.active-menu{
-background:#dff8f3;
-color:#39d0b1;
-font-weight:bold;
-}
-
-.overlay{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.5);
-display:none;
-z-index:999;
-}
-
-/* TABS */
-
-.tabs{
-display:flex;
-justify-content:center;
-gap:20px;
-margin-top:20px;
-flex-wrap:wrap;
-}
-
-.tab{
-padding:12px 20px;
-background:white;
-border-radius:12px;
-font-weight:bold;
-box-shadow:0 2px 10px rgba(0,0,0,0.1);
-cursor:pointer;
-}
-
-.active{
-background:#39d0b1;
-color:white;
-}
-
-/* COURSE CARD */
+/* HOME PAGE */
 
 .container{
 padding:20px;
 }
 
-.card{
+.course-card{
 background:white;
-border-radius:20px;
 padding:15px;
+border-radius:20px;
 box-shadow:0 2px 15px rgba(0,0,0,0.1);
 margin-top:20px;
 }
 
-.card img{
+.course-card img{
 width:100%;
 border-radius:15px;
 }
 
-.card h2{
+.course-title{
 margin-top:15px;
 font-size:26px;
+font-weight:bold;
 }
 
 .validity{
-margin-top:20px;
+margin-top:15px;
 font-size:18px;
 color:#555;
 }
@@ -168,13 +78,13 @@ color:#555;
 .explore-btn{
 width:100%;
 padding:16px;
-margin-top:25px;
 border:none;
 border-radius:12px;
 background:#39d0b1;
 color:white;
 font-size:18px;
 font-weight:bold;
+margin-top:25px;
 cursor:pointer;
 }
 
@@ -185,22 +95,44 @@ display:none;
 padding:20px;
 }
 
-.details-page img{
-width:100%;
-margin-top:20px;
-border-radius:10px;
+/* SECTION BUTTONS */
+
+.section-buttons{
+display:flex;
+gap:10px;
+margin-bottom:20px;
+flex-wrap:wrap;
 }
 
-.content-btn{
-width:100%;
-padding:16px;
-margin-top:20px;
+.section-buttons button{
+flex:1;
+padding:14px;
 border:none;
 border-radius:12px;
-background:#5b5bff;
-color:white;
-font-size:18px;
+background:white;
+font-size:16px;
 font-weight:bold;
+cursor:pointer;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.active-btn{
+background:#39d0b1 !important;
+color:white;
+}
+
+/* SECTION */
+
+.section{
+display:none;
+}
+
+/* IMAGES */
+
+.section img{
+width:100%;
+border-radius:12px;
+margin-top:20px;
 }
 
 /* DESCRIPTION */
@@ -215,11 +147,6 @@ font-size:18px;
 }
 
 /* SUBJECTS */
-
-.subjects{
-display:none;
-margin-top:25px;
-}
 
 .subject-card{
 background:white;
@@ -250,6 +177,22 @@ border-radius:8px;
 border:1px solid #ddd;
 }
 
+/* DEMO */
+
+.demo-box{
+background:white;
+padding:20px;
+border-radius:15px;
+margin-top:20px;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.demo-video{
+width:100%;
+border-radius:12px;
+margin-top:15px;
+}
+
 /* BACK */
 
 .back-btn{
@@ -258,7 +201,7 @@ background:red;
 color:white;
 border:none;
 border-radius:10px;
-margin-bottom:15px;
+margin-bottom:20px;
 font-size:16px;
 cursor:pointer;
 }
@@ -268,49 +211,9 @@ cursor:pointer;
 
 <body>
 
-<!-- SIDEBAR -->
-
-<div id="sidebar" class="sidebar">
-
-<div class="sidebar-top">
-
-<h2>Study Material</h2>
-
-<span class="close-btn" onclick="closeSidebar()">✕</span>
-
-</div>
-
-<div class="menu-item active-menu">
-📚 My Course
-</div>
-
-<div class="menu-item">
-🛒 Purchase History
-</div>
-
-<div class="menu-item">
-👤 My Profile
-</div>
-
-<div class="menu-item">
-📖 E-Books
-</div>
-
-<div class="menu-item">
-📝 Test Series
-</div>
-
-</div>
-
-<!-- OVERLAY -->
-
-<div id="overlay" class="overlay" onclick="closeSidebar()"></div>
-
 <!-- TOPBAR -->
 
 <div class="topbar">
-
-<div class="menu" onclick="openSidebar()">☰</div>
 
 <img src="batch.jpg" class="logo">
 
@@ -320,39 +223,23 @@ Hi, Suraj 👤
 
 </div>
 
-<!-- TABS -->
+<!-- HOME PAGE -->
 
-<div class="tabs">
+<div class="container" id="homePage">
 
-<div class="tab active">
-COURSES
-</div>
-
-<div class="tab">
-E-BOOKS
-</div>
-
-<div class="tab">
-TEST SERIES
-</div>
-
-</div>
-
-<!-- MAIN COURSE -->
-
-<div class="container" id="mainPage">
-
-<div class="card">
+<div class="course-card">
 
 <img src="batch.jpg">
 
-<h2>AARAMBH 10TH BATCH 26-27</h2>
-
-<div class="validity">
-📅 Access Available Until Board Exams • March 2027
+<div class="course-title">
+AARAMBH 10TH BATCH 26-27
 </div>
 
-<button class="explore-btn" onclick="openDetails()">
+<div class="validity">
+📅 Validity: March 2027
+</div>
+
+<button class="explore-btn" onclick="openDashboard()">
 Explore
 </button>
 
@@ -362,19 +249,45 @@ Explore
 
 <!-- DETAILS PAGE -->
 
-<div class="details-page" id="detailsPage">
+<div class="details-page" id="dashboardPage">
 
 <button class="back-btn" onclick="goBack()">
 ⬅ Back
 </button>
 
+<!-- SECTION BUTTONS -->
+
+<div class="section-buttons">
+
+<button id="overviewBtn"
+class="active-btn"
+onclick="showSection('overview')">
+Overview
+</button>
+
+<button id="contentBtn"
+onclick="showSection('content')">
+Contents
+</button>
+
+<button id="demoBtn"
+onclick="showSection('demo')">
+Demo Class
+</button>
+
+</div>
+
+<!-- OVERVIEW -->
+
+<div id="overview" class="section" style="display:block;">
+
+<!-- TIMETABLE IMAGE -->
+
 <img src="timetable.jpg">
 
-<img src="planner.jpg">
+<!-- PLANNER IMAGE -->
 
-<button class="content-btn" onclick="toggleSubjects()">
-📚 Contents
-</button>
+<img src="planner.jpg">
 
 <div class="description">
 
@@ -415,9 +328,11 @@ This batch is non-refundable and non-transferable.
 
 </div>
 
-<!-- SUBJECTS -->
+</div>
 
-<div class="subjects" id="subjects">
+<!-- CONTENT SECTION -->
+
+<div id="content" class="section">
 
 <!-- MATHS -->
 
@@ -456,29 +371,9 @@ This batch is non-refundable and non-transferable.
 
 <div class="subject-content" id="science">
 
-<div class="folder">
-📂 Physics
-
-<div class="file">🎥 Videos</div>
-<div class="file">📄 Notes</div>
-
-</div>
-
-<div class="folder">
-📂 Chemistry
-
-<div class="file">🎥 Videos</div>
-<div class="file">📄 Notes</div>
-
-</div>
-
-<div class="folder">
-📂 Biology
-
-<div class="file">🎥 Videos</div>
-<div class="file">📄 Notes</div>
-
-</div>
+<div class="folder">📂 Physics</div>
+<div class="folder">📂 Chemistry</div>
+<div class="folder">📂 Biology</div>
 
 </div>
 
@@ -492,21 +387,8 @@ This batch is non-refundable and non-transferable.
 
 <div class="subject-content" id="english">
 
-<div class="folder">
-📂 Grammar
-
-<div class="file">🎥 Videos</div>
-<div class="file">📄 Notes</div>
-
-</div>
-
-<div class="folder">
-📂 Literature
-
-<div class="file">🎥 Videos</div>
-<div class="file">📄 Notes</div>
-
-</div>
+<div class="folder">📂 Grammar</div>
+<div class="folder">📂 Literature</div>
 
 </div>
 
@@ -521,7 +403,6 @@ This batch is non-refundable and non-transferable.
 <div class="subject-content" id="hindi">
 
 <div class="folder">📂 Course A</div>
-
 <div class="folder">📂 Course B</div>
 
 </div>
@@ -545,21 +426,6 @@ This batch is non-refundable and non-transferable.
 
 </div>
 
-<!-- SANSKRIT -->
-
-<div class="subject-card" onclick="toggleFolder('sanskrit')">
-
-<h3>📚 Sanskrit</h3>
-
-<div class="subject-content" id="sanskrit">
-
-<div class="folder">📂 Chapters</div>
-<div class="folder">📂 Grammar</div>
-
-</div>
-
-</div>
-
 <!-- AI -->
 
 <div class="subject-card" onclick="toggleFolder('ai')">
@@ -570,7 +436,6 @@ This batch is non-refundable and non-transferable.
 
 <div class="folder">📂 Part A</div>
 <div class="folder">📂 Part B</div>
-<div class="folder">📂 Practical</div>
 
 </div>
 
@@ -586,9 +451,30 @@ This batch is non-refundable and non-transferable.
 
 <div class="folder">📂 Part A</div>
 <div class="folder">📂 Part B</div>
-<div class="folder">📂 Practical</div>
 
 </div>
+
+</div>
+
+</div>
+
+<!-- DEMO CLASS -->
+
+<div id="demo" class="section">
+
+<div class="demo-box">
+
+<h2>🎬 Demo Class</h2>
+
+<video
+class="demo-video"
+controls
+controlsList="nodownload"
+disablePictureInPicture>
+
+<source src="demo.mp4" type="video/mp4">
+
+</video>
 
 </div>
 
@@ -598,30 +484,44 @@ This batch is non-refundable and non-transferable.
 
 <script>
 
-function openDetails(){
+function openDashboard(){
 
-document.getElementById("mainPage").style.display="none";
+document.getElementById("homePage").style.display="none";
 
-document.getElementById("detailsPage").style.display="block";
+document.getElementById("dashboardPage").style.display="block";
 
 }
 
 function goBack(){
 
-document.getElementById("detailsPage").style.display="none";
+document.getElementById("dashboardPage").style.display="none";
 
-document.getElementById("mainPage").style.display="block";
+document.getElementById("homePage").style.display="block";
 
 }
 
-function toggleSubjects(){
+function showSection(section){
 
-let subjects = document.getElementById("subjects");
+document.getElementById("overview").style.display="none";
+document.getElementById("content").style.display="none";
+document.getElementById("demo").style.display="none";
 
-if(subjects.style.display=="block"){
-subjects.style.display="none";
-}else{
-subjects.style.display="block";
+document.getElementById(section).style.display="block";
+
+document.getElementById("overviewBtn").classList.remove("active-btn");
+document.getElementById("contentBtn").classList.remove("active-btn");
+document.getElementById("demoBtn").classList.remove("active-btn");
+
+if(section=="overview"){
+document.getElementById("overviewBtn").classList.add("active-btn");
+}
+
+if(section=="content"){
+document.getElementById("contentBtn").classList.add("active-btn");
+}
+
+if(section=="demo"){
+document.getElementById("demoBtn").classList.add("active-btn");
 }
 
 }
@@ -635,24 +535,6 @@ folder.style.display="none";
 }else{
 folder.style.display="block";
 }
-
-}
-
-/* SIDEBAR */
-
-function openSidebar(){
-
-document.getElementById("sidebar").style.left="0";
-
-document.getElementById("overlay").style.display="block";
-
-}
-
-function closeSidebar(){
-
-document.getElementById("sidebar").style.left="-280px";
-
-document.getElementById("overlay").style.display="none";
 
 }
 
