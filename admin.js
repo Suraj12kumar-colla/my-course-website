@@ -6,108 +6,209 @@ doc,
 setDoc,
 getDocs,
 collection,
-deleteDoc
+deleteDoc,
+updateDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCIbu3b-El4ZVkO1Ew1CsLWk3Odx6lLAQg",
-  authDomain: "mycoursewebsite-a1972.firebaseapp.com",
-  projectId: "mycoursewebsite-a1972",
-  storageBucket: "mycoursewebsite-a1972.firebasestorage.app",
-  messagingSenderId: "988959077553",
-  appId: "1:988959077553:web:85222201ab4a6ee9579e90",
-  measurementId: "G-W4L4RBJ6ZJ"
+
+apiKey: "YOUR_API_KEY",
+
+authDomain: "YOUR_DOMAIN",
+
+projectId: "YOUR_PROJECT_ID",
+
+storageBucket: "YOUR_BUCKET",
+
+messagingSenderId: "XXXX",
+
+appId: "XXXX"
+
 };
 
 const app = initializeApp(firebaseConfig);
+
 const db = getFirestore(app);
 
-// 🔥 CREATE CODE
+// CREATE CODE
 window.createCode = async function(){
 
 try{
 
 let code = document.getElementById("code").value;
+
 let expiry = document.getElementById("expiry").value;
 
 if(!expiry){
-document.getElementById("status").innerText = "Select expiry date";
+
+alert("Select expiry");
+
 return;
+
 }
 
 if(!code){
-code = Math.random().toString(36).substring(2,8).toUpperCase();
+
+code = Math.random().toString(36)
+.substring(2,8)
+.toUpperCase();
+
 }
 
 await setDoc(doc(db,"codes",code),{
+
 used:false,
+
 expiry:expiry,
+
 createdAt:new Date().toISOString()
+
 });
 
-document.getElementById("status").innerText = "Code Created ✔: " + code;
+document.getElementById("status")
+.innerText = "Created: " + code;
 
 loadCodes();
 
 }catch(e){
+
 console.log(e);
-document.getElementById("status").innerText = "Error creating code";
-}
 
 }
 
-// 🔥 LOAD CODES
+}
+
+// LOAD CODES
 window.loadCodes = async function(){
-
-try{
 
 let snap = await getDocs(collection(db,"codes"));
 
 let html = "";
-
-if(snap.empty){
-html = "<p>No codes found</p>";
-}
 
 snap.forEach(docu=>{
 
 let data = docu.data();
 
 html += `
-<div style="background:#222;padding:10px;margin:10px;border-radius:10px">
+
+<div style="
+background:#222;
+padding:15px;
+margin-top:15px;
+border-radius:12px;
+">
 
 <p><b>Code:</b> ${docu.id}</p>
+
 <p><b>Used:</b> ${data.used}</p>
+
 <p><b>Expiry:</b> ${data.expiry}</p>
 
-<button onclick="deleteCode('${docu.id}')">Delete</button>
+<p><b>Used By:</b> ${data.usedBy || "Not Used"}</p>
+
+<button onclick="deleteCode('${docu.id}')">
+Delete
+</button>
 
 </div>
+
 `;
 
 });
 
-document.getElementById("codesList").innerHTML = html;
-
-}catch(e){
-console.log(e);
-document.getElementById("codesList").innerHTML = "Error loading codes";
-}
+document.getElementById("codesList")
+.innerHTML = html;
 
 }
 
-// 🔥 DELETE CODE
-window.deleteCode = async function(codeId){
+// DELETE
+window.deleteCode = async function(id){
 
-try{
-
-await deleteDoc(doc(db,"codes",codeId));
+await deleteDoc(doc(db,"codes",id));
 
 loadCodes();
 
-}catch(e){
-alert("Delete failed");
-console.log(e);
 }
+
+// LOAD USERS
+window.loadUsers = async function(){
+
+let snap = await getDocs(collection(db,"users"));
+
+let html = "";
+
+snap.forEach(docu=>{
+
+let data = docu.data();
+
+html += `
+
+<div style="
+background:#111;
+padding:15px;
+margin-top:15px;
+border-radius:12px;
+">
+
+<h3>${data.email}</h3>
+
+<p>Login Count: ${data.loginCount}</p>
+
+<p>Last Login: ${data.lastLogin}</p>
+
+<p>Videos Watched: ${data.videoWatched}</p>
+
+<p>Status:
+${data.banned
+? "BANNED"
+: "ACTIVE"}
+</p>
+
+<button onclick="banUser('${docu.id}')">
+Ban
+</button>
+
+<button onclick="kickUser('${docu.id}')">
+Kick
+</button>
+
+</div>
+
+`;
+
+});
+
+document.getElementById("usersList")
+.innerHTML = html;
+
+}
+
+// BAN USER
+window.banUser = async function(uid){
+
+await updateDoc(doc(db,"users",uid),{
+
+banned:true
+
+});
+
+alert("User banned");
+
+loadUsers();
+
+}
+
+// KICK USER
+window.kickUser = async function(uid){
+
+await updateDoc(doc(db,"users",uid),{
+
+deviceId:""
+
+});
+
+alert("User kicked");
+
+loadUsers();
 
 }
