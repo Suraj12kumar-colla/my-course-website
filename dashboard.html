@@ -433,6 +433,22 @@ Complete syllabus coverage till boards 2027.
 
 </div>
 
+<!-- ANNOUNCEMENTS -->
+
+<div id="announcementBox"
+style="
+background:white;
+padding:20px;
+border-radius:15px;
+margin-bottom:20px;
+">
+
+<h2>📢 Announcements</h2>
+
+<div id="announcements"></div>
+
+</div>
+
 <!-- CONTENT SECTION -->
 
 <div id="content" class="section">
@@ -542,6 +558,26 @@ Complete syllabus coverage till boards 2027.
 <div class="folder">📂 Part B</div>
 
 </div>
+
+</div>
+
+<!-- DYNAMIC VIDEOS -->
+
+<div class="subject-card">
+
+<h3>🎥 Uploaded Videos</h3>
+
+<div id="videosList"></div>
+
+</div>
+
+<!-- DYNAMIC NOTES -->
+
+<div class="subject-card">
+
+<h3>📄 Notes & PDFs</h3>
+
+<div id="notesList"></div>
 
 </div>
 
@@ -683,7 +719,9 @@ import {
 getFirestore,
 doc,
 getDoc,
-updateDoc
+updateDoc,
+collection,
+getDocs
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -707,6 +745,129 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 const db = getFirestore(app);
+
+// LOAD VIDEOS
+
+async function loadVideos(){
+
+const snap =
+await getDocs(collection(db,"videos"));
+
+let html = "";
+
+snap.forEach(docu=>{
+
+let data = docu.data();
+
+html += `
+
+<div class="folder">
+
+<h3>${data.title}</h3>
+
+<p>${data.subject}</p>
+
+<video
+style="width:100%;margin-top:10px;border-radius:10px;"
+controls
+controlsList="nodownload"
+disablePictureInPicture>
+
+<source src="${data.url}" type="video/mp4">
+
+</video>
+
+</div>
+
+`;
+
+});
+
+document.getElementById("videosList")
+.innerHTML = html;
+
+}
+
+// LOAD NOTES
+
+async function loadNotes(){
+
+const snap =
+await getDocs(collection(db,"notes"));
+
+let html = "";
+
+snap.forEach(docu=>{
+
+let data = docu.data();
+
+html += `
+
+<div class="folder">
+
+<h3>${data.title}</h3>
+
+<p>${data.subject}</p>
+
+<a href="${data.url}" download target="_blank">
+
+<button class="explore-btn">
+Download PDF
+</button>
+
+</a>
+
+</div>
+
+`;
+
+});
+
+document.getElementById("notesList")
+.innerHTML = html;
+
+}
+
+// LOAD ANNOUNCEMENTS
+
+async function loadAnnouncements(){
+
+const snap =
+await getDocs(collection(db,"announcements"));
+
+let html = "";
+
+snap.forEach(docu=>{
+
+let data = docu.data();
+
+html += `
+
+<div style="
+padding:12px;
+background:#f2f2f2;
+border-radius:10px;
+margin-top:10px;
+">
+
+📢 ${data.text}
+
+</div>
+
+`;
+
+});
+
+document.getElementById("announcements")
+.innerHTML = html;
+
+}
+
+loadVideos();
+
+loadNotes();
+
+loadAnnouncements();
 
 // AUTH CHECK
 onAuthStateChanged(auth, async(user)=>{

@@ -7,7 +7,8 @@ setDoc,
 getDocs,
 collection,
 deleteDoc,
-updateDoc
+updateDoc,
+addDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 import {
@@ -36,6 +37,27 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 const auth = getAuth(app);
+
+import {
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+onAuthStateChanged(auth,(user)=>{
+
+if(!user){
+window.location.href="index.html";
+return;
+}
+
+if(user.email !== "kumarladla84@gmail.com"){
+
+alert("Unauthorized Access");
+
+window.location.href="index.html";
+
+}
+
+});
 
 window.createCode = async function(){
 
@@ -213,5 +235,170 @@ window.logoutAdmin = async function(){
 await signOut(auth);
 
 window.location.href = "index.html";
+
+}
+
+// CLOUDINARY
+
+const CLOUD_NAME = "dxadgoahq";
+
+const UPLOAD_PRESET = "aarambh_unsigned";
+
+// VIDEO UPLOAD
+
+window.uploadVideo = async function(){
+
+try{
+
+let title =
+document.getElementById("videoTitle").value;
+
+let subject =
+document.getElementById("videoSubject").value;
+
+let file =
+document.getElementById("videoFile").files[0];
+
+let manualLink =
+document.getElementById("videoLink").value;
+
+let finalUrl = "";
+
+if(manualLink){
+
+finalUrl = manualLink;
+
+}else{
+
+if(!file){
+alert("Select video");
+return;
+}
+
+const data = new FormData();
+
+data.append("file",file);
+
+data.append("upload_preset",UPLOAD_PRESET);
+
+const res = await fetch(
+`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`,
+{
+method:"POST",
+body:data
+}
+);
+
+const result = await res.json();
+
+finalUrl = result.secure_url;
+
+}
+
+await addDoc(collection(db,"videos"),{
+
+title:title,
+
+subject:subject,
+
+url:finalUrl,
+
+createdAt:new Date().toISOString()
+
+});
+
+alert("Video Uploaded");
+
+}catch(e){
+
+console.log(e);
+
+alert("Upload Failed");
+
+}
+
+}
+
+// PDF UPLOAD
+
+window.uploadPDF = async function(){
+
+try{
+
+let title =
+document.getElementById("pdfTitle").value;
+
+let subject =
+document.getElementById("pdfSubject").value;
+
+let file =
+document.getElementById("pdfFile").files[0];
+
+if(!file){
+alert("Select PDF");
+return;
+}
+
+const data = new FormData();
+
+data.append("file",file);
+
+data.append("upload_preset",UPLOAD_PRESET);
+
+const res = await fetch(
+`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/raw/upload`,
+{
+method:"POST",
+body:data
+}
+);
+
+const result = await res.json();
+
+await addDoc(collection(db,"notes"),{
+
+title:title,
+
+subject:subject,
+
+url:result.secure_url,
+
+createdAt:new Date().toISOString()
+
+});
+
+alert("PDF Uploaded");
+
+}catch(e){
+
+console.log(e);
+
+alert("PDF Upload Failed");
+
+}
+
+}
+
+// ANNOUNCEMENT
+
+window.addAnnouncement = async function(){
+
+let text =
+document.getElementById("announcementText").value;
+
+if(!text){
+alert("Enter announcement");
+return;
+}
+
+await addDoc(collection(db,"announcements"),{
+
+text:text,
+
+createdAt:new Date().toISOString()
+
+});
+
+alert("Announcement Posted");
 
 }

@@ -113,6 +113,48 @@ Load Students
 
 <div id="usersList"></div>
 
+<hr>
+
+<h2>Upload Study Material</h2>
+
+<input type="text" id="videoTitle" placeholder="Video Title">
+
+<input type="text" id="videoSubject" placeholder="Subject Name">
+
+<input type="file" id="videoFile" accept="video/*">
+
+<input type="text" id="videoLink" placeholder="OR Paste Cloudinary Video Link">
+
+<button class="create-btn" onclick="uploadVideo()">
+Upload Video
+</button>
+
+<hr>
+
+<h2>Upload PDF / Notes</h2>
+
+<input type="text" id="pdfTitle" placeholder="PDF Title">
+
+<input type="text" id="pdfSubject" placeholder="Subject Name">
+
+<input type="file" id="pdfFile" accept=".pdf">
+
+<button class="create-btn" onclick="uploadPDF()">
+Upload PDF
+</button>
+
+<hr>
+
+<h2>Announcements</h2>
+
+<input type="text" id="announcementText" placeholder="Write Announcement">
+
+<button class="create-btn" onclick="addAnnouncement()">
+Post Announcement
+</button>
+
+<div id="announcementList"></div>
+
 </div>
 
 <script type="module" src="admin.js"></script>
