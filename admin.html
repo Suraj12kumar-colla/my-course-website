@@ -3,7 +3,72 @@
 <head>
 <meta charset="UTF-8">
 <title>Pro Admin Panel</title>
-<link rel="stylesheet" href="style.css">
+
+<style>
+
+body{
+background:#111;
+font-family:Arial;
+color:white;
+padding:20px;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+}
+
+input{
+width:100%;
+padding:14px;
+margin-top:12px;
+border:none;
+border-radius:10px;
+font-size:16px;
+}
+
+button{
+padding:14px;
+border:none;
+border-radius:10px;
+margin-top:15px;
+cursor:pointer;
+font-size:16px;
+font-weight:bold;
+}
+
+.create-btn{
+background:#39d0b1;
+color:white;
+width:100%;
+}
+
+.logout-btn{
+background:red;
+color:white;
+width:100%;
+}
+
+.card{
+background:#222;
+padding:15px;
+border-radius:14px;
+margin-top:15px;
+}
+
+.action-btn{
+background:#39d0b1;
+color:white;
+margin-right:10px;
+}
+
+.delete-btn{
+background:red;
+color:white;
+}
+
+</style>
+
 </head>
 
 <body>
@@ -12,21 +77,29 @@
 
 <h1>Admin Panel Pro</h1>
 
-<h3>Create New Code</h3>
+<button class="logout-btn" onclick="logoutAdmin()">
+Logout
+</button>
+
+<h2>Create New Code</h2>
 
 <input type="text" id="code" placeholder="Enter Code">
 
 <input type="date" id="expiry">
 
-<button onclick="createCode()">Create Code</button>
+<button class="create-btn" onclick="createCode()">
+Create Code
+</button>
 
 <p id="status"></p>
 
 <hr>
 
-<h3>All Active Codes</h3>
+<h2>All Active Codes</h2>
 
-<button onclick="loadCodes()">Refresh List</button>
+<button class="create-btn" onclick="loadCodes()">
+Refresh List
+</button>
 
 <div id="codesList"></div>
 
@@ -34,7 +107,7 @@
 
 <h2>Students Analytics</h2>
 
-<button onclick="loadUsers()">
+<button class="create-btn" onclick="loadUsers()">
 Load Students
 </button>
 
@@ -44,14 +117,17 @@ Load Students
 
 <script type="module" src="admin.js"></script>
 
-<!-- 🔥 FIX: auto load list on open -->
 <script>
 window.addEventListener("load", () => {
-  setTimeout(() => {
-    if(typeof loadCodes === "function"){
-      loadCodes();
-    }
-  }, 1000);
+
+setTimeout(() => {
+
+if(typeof loadCodes === "function"){
+loadCodes();
+}
+
+},1000);
+
 });
 </script>
 

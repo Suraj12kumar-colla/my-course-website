@@ -10,25 +10,32 @@ deleteDoc,
 updateDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+import {
+getAuth,
+signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
 const firebaseConfig = {
 
-apiKey: "YOUR_API_KEY",
+apiKey: "AIzaSyCIbu3b-El4ZVkO1Ew1CsLWk3Odx6lLAQg",
 
-authDomain: "YOUR_DOMAIN",
+authDomain: "mycoursewebsite-a1972.firebaseapp.com",
 
-projectId: "YOUR_PROJECT_ID",
+projectId: "mycoursewebsite-a1972",
 
-storageBucket: "YOUR_BUCKET",
+storageBucket: "mycoursewebsite-a1972.firebasestorage.app",
 
-messagingSenderId: "XXXX",
+messagingSenderId: "988959077553",
 
-appId: "XXXX"
+appId: "1:988959077553:web:85222201ab4a6ee9579e90"
 
 };
 
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
+
+const auth = getAuth(app);
 
 // CREATE CODE
 window.createCode = async function(){
@@ -49,7 +56,8 @@ return;
 
 if(!code){
 
-code = Math.random().toString(36)
+code = Math.random()
+.toString(36)
 .substring(2,8)
 .toUpperCase();
 
@@ -58,6 +66,8 @@ code = Math.random().toString(36)
 await setDoc(doc(db,"codes",code),{
 
 used:false,
+
+usedBy:"",
 
 expiry:expiry,
 
@@ -74,12 +84,16 @@ loadCodes();
 
 console.log(e);
 
+alert("Error creating code");
+
 }
 
 }
 
 // LOAD CODES
 window.loadCodes = async function(){
+
+try{
 
 let snap = await getDocs(collection(db,"codes"));
 
@@ -91,12 +105,7 @@ let data = docu.data();
 
 html += `
 
-<div style="
-background:#222;
-padding:15px;
-margin-top:15px;
-border-radius:12px;
-">
+<div class="card">
 
 <p><b>Code:</b> ${docu.id}</p>
 
@@ -106,8 +115,11 @@ border-radius:12px;
 
 <p><b>Used By:</b> ${data.usedBy || "Not Used"}</p>
 
-<button onclick="deleteCode('${docu.id}')">
+<button class="delete-btn"
+onclick="deleteCode('${docu.id}')">
+
 Delete
+
 </button>
 
 </div>
@@ -119,9 +131,15 @@ Delete
 document.getElementById("codesList")
 .innerHTML = html;
 
+}catch(e){
+
+console.log(e);
+
 }
 
-// DELETE
+}
+
+// DELETE CODE
 window.deleteCode = async function(id){
 
 await deleteDoc(doc(db,"codes",id));
@@ -143,33 +161,34 @@ let data = docu.data();
 
 html += `
 
-<div style="
-background:#111;
-padding:15px;
-margin-top:15px;
-border-radius:12px;
-">
+<div class="card">
 
 <h3>${data.email}</h3>
 
-<p>Login Count: ${data.loginCount}</p>
+<p>Login Count: ${data.loginCount || 0}</p>
 
-<p>Last Login: ${data.lastLogin}</p>
+<p>Last Login: ${data.lastLogin || "N/A"}</p>
 
-<p>Videos Watched: ${data.videoWatched}</p>
+<p>Videos Watched: ${data.videoWatched || 0}</p>
+
+<p>Code Used: ${data.codeUsed || "N/A"}</p>
 
 <p>Status:
-${data.banned
-? "BANNED"
-: "ACTIVE"}
+${data.banned ? "BANNED" : "ACTIVE"}
 </p>
 
-<button onclick="banUser('${docu.id}')">
+<button class="action-btn"
+onclick="banUser('${docu.id}')">
+
 Ban
+
 </button>
 
-<button onclick="kickUser('${docu.id}')">
+<button class="delete-btn"
+onclick="kickUser('${docu.id}')">
+
 Kick
+
 </button>
 
 </div>
@@ -192,7 +211,7 @@ banned:true
 
 });
 
-alert("User banned");
+alert("User Banned");
 
 loadUsers();
 
@@ -207,8 +226,17 @@ deviceId:""
 
 });
 
-alert("User kicked");
+alert("User Kicked");
 
 loadUsers();
+
+}
+
+// LOGOUT
+window.logoutAdmin = async function(){
+
+await signOut(auth);
+
+window.location.href = "index.html";
 
 }
