@@ -17,6 +17,8 @@ font-family:Arial;
 
 body{
 background:#f2f2f2;
+-webkit-user-select:none;
+user-select:none;
 }
 
 /* TOPBAR */
@@ -285,6 +287,17 @@ font-size:16px;
 cursor:pointer;
 }
 
+.logout-btn{
+padding:12px 18px;
+background:#111;
+color:white;
+border:none;
+border-radius:10px;
+margin-left:10px;
+font-size:16px;
+cursor:pointer;
+}
+
 </style>
 </head>
 
@@ -322,6 +335,10 @@ cursor:pointer;
 📝 Test Series
 </div>
 
+<div class="menu-item" onclick="logoutUser()">
+🚪 Logout
+</div>
+
 </div>
 
 <!-- OVERLAY -->
@@ -334,7 +351,7 @@ cursor:pointer;
 
 <div class="menu" onclick="openSidebar()">☰</div>
 
-<div class="user">
+<div class="user" id="userName">
 Hi, Student 👤
 </div>
 
@@ -420,8 +437,6 @@ Complete syllabus coverage till boards 2027.
 
 <div id="content" class="section">
 
-<!-- MATHS -->
-
 <div class="subject-card" onclick="toggleFolder('maths')">
 
 <h3>📘 Maths</h3>
@@ -449,8 +464,6 @@ Complete syllabus coverage till boards 2027.
 
 </div>
 
-<!-- SCIENCE -->
-
 <div class="subject-card" onclick="toggleFolder('science')">
 
 <h3>🔬 Science</h3>
@@ -465,8 +478,6 @@ Complete syllabus coverage till boards 2027.
 
 </div>
 
-<!-- ENGLISH -->
-
 <div class="subject-card" onclick="toggleFolder('english')">
 
 <h3>📖 English</h3>
@@ -480,8 +491,6 @@ Complete syllabus coverage till boards 2027.
 
 </div>
 
-<!-- HINDI -->
-
 <div class="subject-card" onclick="toggleFolder('hindi')">
 
 <h3>📝 Hindi</h3>
@@ -494,8 +503,6 @@ Complete syllabus coverage till boards 2027.
 </div>
 
 </div>
-
-<!-- SST -->
 
 <div class="subject-card" onclick="toggleFolder('sst')">
 
@@ -512,8 +519,6 @@ Complete syllabus coverage till boards 2027.
 
 </div>
 
-<!-- AI -->
-
 <div class="subject-card" onclick="toggleFolder('ai')">
 
 <h3>🤖 AI</h3>
@@ -526,8 +531,6 @@ Complete syllabus coverage till boards 2027.
 </div>
 
 </div>
-
-<!-- IT -->
 
 <div class="subject-card" onclick="toggleFolder('it')">
 
@@ -553,6 +556,7 @@ Complete syllabus coverage till boards 2027.
 <h2>🎬 Demo Class</h2>
 
 <video
+id="mainVideo"
 class="demo-video"
 controls
 controlsList="nodownload"
@@ -640,130 +644,30 @@ document.getElementById("overlay").style.display="none";
 
 }
 
+// BLOCK INSPECT
+document.addEventListener("contextmenu",(e)=>{
+e.preventDefault();
+});
+
+document.onkeydown = function(e){
+
+if(e.keyCode == 123){
+return false;
+}
+
+if(e.ctrlKey && e.shiftKey && e.keyCode == 73){
+return false;
+}
+
+if(e.ctrlKey && e.keyCode == 85){
+return false;
+}
+
+};
+
 </script>
 
 <!-- FIREBASE -->
-
-<script type="module" src="script.js"></script>
-
-<script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-
-import {
-getAuth,
-onAuthStateChanged,
-signOut
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-import {
-getFirestore,
-doc,
-getDoc,
-updateDoc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCIbu3b-El4ZVkO1Ew1CsLWk3Odx6lLAQg",
-  authDomain: "mycoursewebsite-a1972.firebaseapp.com",
-  projectId: "mycoursewebsite-a1972",
-  storageBucket: "mycoursewebsite-a1972.firebasestorage.app",
-  messagingSenderId: "988959077553",
-  appId: "1:988959077553:web:85222201ab4a6ee9579e90",
-  measurementId: "G-W4L4RBJ6ZJ"
-};
-
-const app = initializeApp(firebaseConfig);
-
-const auth = getAuth(app);
-
-const db = getFirestore(app);
-
-// AUTH CHECK
-onAuthStateChanged(auth, async(user)=>{
-
-if(!user){
-
-window.location.href = "index.html";
-
-return;
-
-}
-
-// USER NAME
-document.querySelector(".user").innerHTML =
-"Hi, " + user.email;
-
-// CHECK USER
-const userRef = doc(db,"users",user.uid);
-
-const snap = await getDoc(userRef);
-
-if(snap.exists()){
-
-let data = snap.data();
-
-let today =
-new Date().toISOString().split("T")[0];
-
-// BAN CHECK
-if(data.banned){
-
-alert("Account Banned");
-
-await signOut(auth);
-
-window.location.href = "index.html";
-
-}
-
-// EXPIRED
-if(data.codeExpiry < today){
-
-alert("Access Expired");
-
-await signOut(auth);
-
-window.location.href = "index.html";
-
-}
-
-}
-
-});
-
-// VIDEO TRACKING
-const video = document.querySelector("video");
-
-if(video){
-
-video.addEventListener("ended", async()=>{
-
-const user = auth.currentUser;
-
-if(!user) return;
-
-const ref = doc(db,"users",user.uid);
-
-const snap = await getDoc(ref);
-
-if(snap.exists()){
-
-let count = snap.data().videoWatched || 0;
-
-await updateDoc(ref,{
-
-videoWatched: count + 1
-
-});
-
-}
-
-});
-
-}
-
-</script>
 
 <script type="module">
 
@@ -839,6 +743,8 @@ await signOut(auth);
 
 window.location.href = "index.html";
 
+return;
+
 }
 
 // EXPIRY CHECK
@@ -850,6 +756,24 @@ await signOut(auth);
 
 window.location.href = "index.html";
 
+return;
+
+}
+
+// DEVICE CHECK
+let deviceId =
+localStorage.getItem("deviceId");
+
+if(data.deviceId !== deviceId){
+
+alert("Account Logged In Another Device");
+
+await signOut(auth);
+
+window.location.href = "index.html";
+
+return;
+
 }
 
 }
@@ -857,7 +781,8 @@ window.location.href = "index.html";
 });
 
 // VIDEO TRACKING
-const video = document.querySelector("video");
+const video =
+document.getElementById("mainVideo");
 
 if(video){
 
@@ -885,6 +810,15 @@ videoWatched: count + 1
 }
 
 });
+
+}
+
+// LOGOUT
+window.logoutUser = async function(){
+
+await signOut(auth);
+
+window.location.href = "index.html";
 
 }
 

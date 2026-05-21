@@ -37,7 +37,6 @@ const db = getFirestore(app);
 
 const auth = getAuth(app);
 
-// CREATE CODE
 window.createCode = async function(){
 
 try{
@@ -47,32 +46,22 @@ let code = document.getElementById("code").value;
 let expiry = document.getElementById("expiry").value;
 
 if(!expiry){
-
 alert("Select expiry");
-
 return;
-
 }
 
 if(!code){
-
 code = Math.random()
 .toString(36)
 .substring(2,8)
 .toUpperCase();
-
 }
 
 await setDoc(doc(db,"codes",code),{
-
 used:false,
-
 usedBy:"",
-
 expiry:expiry,
-
 createdAt:new Date().toISOString()
-
 });
 
 document.getElementById("status")
@@ -81,16 +70,12 @@ document.getElementById("status")
 loadCodes();
 
 }catch(e){
-
 console.log(e);
-
 alert("Error creating code");
-
 }
 
 }
 
-// LOAD CODES
 window.loadCodes = async function(){
 
 try{
@@ -104,26 +89,18 @@ snap.forEach(docu=>{
 let data = docu.data();
 
 html += `
-
 <div class="card">
-
 <p><b>Code:</b> ${docu.id}</p>
-
 <p><b>Used:</b> ${data.used}</p>
-
 <p><b>Expiry:</b> ${data.expiry}</p>
-
 <p><b>Used By:</b> ${data.usedBy || "Not Used"}</p>
 
 <button class="delete-btn"
 onclick="deleteCode('${docu.id}')">
-
 Delete
-
 </button>
 
 </div>
-
 `;
 
 });
@@ -132,14 +109,11 @@ document.getElementById("codesList")
 .innerHTML = html;
 
 }catch(e){
-
 console.log(e);
-
 }
 
 }
 
-// DELETE CODE
 window.deleteCode = async function(id){
 
 await deleteDoc(doc(db,"codes",id));
@@ -148,7 +122,6 @@ loadCodes();
 
 }
 
-// LOAD USERS
 window.loadUsers = async function(){
 
 let snap = await getDocs(collection(db,"users"));
@@ -160,7 +133,6 @@ snap.forEach(docu=>{
 let data = docu.data();
 
 html += `
-
 <div class="card">
 
 <h3>${data.email}</h3>
@@ -171,7 +143,7 @@ html += `
 
 <p>Videos Watched: ${data.videoWatched || 0}</p>
 
-<p>Code Used: ${data.codeUsed || "N/A"}</p>
+<p>Code Used: ${data.activeCode || "N/A"}</p>
 
 <p>Status:
 ${data.banned ? "BANNED" : "ACTIVE"}
@@ -179,20 +151,15 @@ ${data.banned ? "BANNED" : "ACTIVE"}
 
 <button class="action-btn"
 onclick="banUser('${docu.id}')">
-
 Ban
-
 </button>
 
 <button class="delete-btn"
 onclick="kickUser('${docu.id}')">
-
 Kick
-
 </button>
 
 </div>
-
 `;
 
 });
@@ -202,12 +169,22 @@ document.getElementById("usersList")
 
 }
 
-// BAN USER
 window.banUser = async function(uid){
+
+let days = prompt("Ban for how many days?");
+
+if(!days) return;
+
+let banExpiry = new Date();
+
+banExpiry.setDate(
+banExpiry.getDate() + parseInt(days)
+);
 
 await updateDoc(doc(db,"users",uid),{
 
-banned:true
+banned:true,
+banExpiry: banExpiry.toISOString()
 
 });
 
@@ -217,12 +194,11 @@ loadUsers();
 
 }
 
-// KICK USER
 window.kickUser = async function(uid){
 
 await updateDoc(doc(db,"users",uid),{
 
-deviceId:""
+deviceId:"KICKED_" + Date.now()
 
 });
 
@@ -232,7 +208,6 @@ loadUsers();
 
 }
 
-// LOGOUT
 window.logoutAdmin = async function(){
 
 await signOut(auth);

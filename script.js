@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 
-import { 
-getAuth, 
+import {
+getAuth,
 signInWithEmailAndPassword,
 signOut
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -15,12 +15,13 @@ setDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_BUCKET",
-  messagingSenderId: "XXXX",
-  appId: "XXXX"
+  apiKey: "AIzaSyCIbu3b-El4ZVkO1Ew1CsLWk3Odx6lLAQg",
+  authDomain: "mycoursewebsite-a1972.firebaseapp.com",
+  projectId: "mycoursewebsite-a1972",
+  storageBucket: "mycoursewebsite-a1972.firebasestorage.app",
+  messagingSenderId: "988959077553",
+  appId: "1:988959077553:web:85222201ab4a6ee9579e90",
+  measurementId: "G-W4L4RBJ6ZJ"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -39,69 +40,56 @@ let code = document.getElementById("code").value;
 
 try{
 
-// LOGIN
 await signInWithEmailAndPassword(auth,email,password);
 
 const user = auth.currentUser;
 
-// USER CHECK
 const userRef = doc(db,"users",user.uid);
 
 const userSnap = await getDoc(userRef);
 
-// BAN CHECK
 if(userSnap.exists()){
 
 let userData = userSnap.data();
 
 if(userData.banned){
 
+let now = new Date();
+let banDate = new Date(userData.banExpiry);
+
+if(now < banDate){
 alert("Your account is banned");
-
 await signOut(auth);
-
 return;
-
 }
 
 }
 
-// CODE CHECK
+}
+
 const codeRef = doc(db,"codes",code);
 
 const codeSnap = await getDoc(codeRef);
 
 if(!codeSnap.exists()){
-
 document.getElementById("msg").innerText = "Invalid Code";
-
 return;
-
 }
 
 let codeData = codeSnap.data();
 
 let today = new Date().toISOString().split("T")[0];
 
-// EXPIRED
 if(codeData.expiry < today){
-
 document.getElementById("msg").innerText = "Code Expired";
-
 return;
-
 }
 
-// USED
 if(codeData.used){
-
 document.getElementById("msg").innerText = "Code Already Used";
-
 return;
-
 }
 
-// DEVICE ID
 let deviceId = localStorage.getItem("deviceId");
 
 if(!deviceId){
@@ -112,7 +100,22 @@ localStorage.setItem("deviceId",deviceId);
 
 }
 
-// SAVE USER DATA
+if(userSnap.exists()){
+
+let oldDevice = userSnap.data().deviceId;
+
+if(oldDevice && oldDevice !== deviceId){
+
+alert("Account already active on another device");
+
+await signOut(auth);
+
+return;
+
+}
+
+}
+
 await setDoc(userRef,{
 
 email:user.email,
@@ -131,11 +134,14 @@ activeCode:code,
 
 codeExpiry:codeData.expiry,
 
-videoWatched:0
+videoWatched:0,
+
+tamperAttempts:0,
+
+lastActive:new Date().toISOString()
 
 },{ merge:true });
 
-// MARK CODE USED
 await updateDoc(codeRef,{
 
 used:true,
@@ -160,7 +166,6 @@ document.getElementById("msg").innerText = "Login Failed";
 
 }
 
-// AUTO LOGOUT CHECK
 window.checkExpiry = async function(){
 
 const user = auth.currentUser;
@@ -175,7 +180,8 @@ if(!snap.exists()) return;
 
 let data = snap.data();
 
-let today = new Date().toISOString().split("T")[0];
+let today =
+new Date().toISOString().split("T")[0];
 
 if(data.codeExpiry < today){
 
@@ -187,4 +193,43 @@ window.location.href="index.html";
 
 }
 
+if(data.banned){
+
+if(data.banExpiry){
+
+let now = new Date();
+
+let banDate = new Date(data.banExpiry);
+
+if(now < banDate){
+
+alert("You are banned");
+
+await signOut(auth);
+
+window.location.href="index.html";
+
 }
+
+}
+
+}
+
+let deviceId =
+localStorage.getItem("deviceId");
+
+if(data.deviceId !== deviceId){
+
+alert("Session expired");
+
+await signOut(auth);
+
+window.location.href="index.html";
+
+}
+
+}
+
+setInterval(()=>{
+checkExpiry();
+},5000);
