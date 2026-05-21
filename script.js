@@ -31,6 +31,16 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 window.login = async function(){
+  
+  // ADMIN BYPASS
+
+if(user.email === "kumarladla84@gmail.com"){
+
+window.location.href = "admin.html";
+
+return;
+
+}
 
 let email = document.getElementById("email").value;
 
