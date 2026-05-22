@@ -44,6 +44,16 @@ await signInWithEmailAndPassword(auth,email,password);
 
 const user = auth.currentUser;
 
+// ADMIN BYPASS
+
+if(user.email === "kumarladla84@gmail.com"){
+
+window.location.href = "admin.html";
+
+return;
+
+}
+
 const userRef = doc(db,"users",user.uid);
 
 const userSnap = await getDoc(userRef);
