@@ -983,88 +983,254 @@ window.location.href = "index.html";
 
 }
 
-// IDLE DETECTION SYSTEM
+<script type="module">
 
-let idleTime = 0;
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160/build/three.module.js";
+
+import { GLTFLoader }
+from "https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/loaders/GLTFLoader.js";
+
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(
+45,
+window.innerWidth/window.innerHeight,
+0.1,
+1000
+);
+
+camera.position.set(0,1.5,5);
+
+const renderer = new THREE.WebGLRenderer({
+alpha:true,
+antialias:true
+});
+
+renderer.setSize(
+window.innerWidth,
+window.innerHeight
+);
+
+renderer.setPixelRatio(window.devicePixelRatio);
+
+renderer.domElement.style.position = "fixed";
+renderer.domElement.style.left = "0";
+renderer.domElement.style.top = "0";
+renderer.domElement.style.zIndex = "999999";
+renderer.domElement.style.pointerEvents = "none";
+
+document.body.appendChild(renderer.domElement);
+
+// LIGHTS
+
+const light = new THREE.DirectionalLight(
+0xffffff,
+4
+);
+
+light.position.set(0,5,5);
+
+scene.add(light);
+
+const ambient = new THREE.AmbientLight(
+0xffffff,
+2
+);
+
+scene.add(ambient);
+
+// AURA
+
+const auraGeometry =
+new THREE.SphereGeometry(1.3,32,32);
+
+const auraMaterial =
+new THREE.MeshBasicMaterial({
+
+color:0x4d7cff,
+transparent:true,
+opacity:0.15
+
+});
+
+const aura = new THREE.Mesh(
+auraGeometry,
+auraMaterial
+);
+
+scene.add(aura);
+
+const aura2Geometry =
+new THREE.SphereGeometry(1.6,32,32);
+
+const aura2Material =
+new THREE.MeshBasicMaterial({
+
+color:0xff00ff,
+transparent:true,
+opacity:0.08
+
+});
+
+const aura2 = new THREE.Mesh(
+aura2Geometry,
+aura2Material
+);
+
+scene.add(aura2);
+
+// PARTICLES
+
+const particleGeometry =
+new THREE.BufferGeometry();
+
+const particleCount = 300;
+
+const positions = [];
+
+for(let i=0;i<particleCount;i++){
+
+positions.push(
+(Math.random()-0.5)*5,
+(Math.random()-0.5)*5,
+(Math.random()-0.5)*5
+);
+
+}
+
+particleGeometry.setAttribute(
+'position',
+new THREE.Float32BufferAttribute(
+positions,
+3
+)
+);
+
+const particleMaterial =
+new THREE.PointsMaterial({
+
+size:0.03,
+color:0x6aa9ff,
+transparent:true,
+opacity:0.9
+
+});
+
+const particles =
+new THREE.Points(
+particleGeometry,
+particleMaterial
+);
+
+scene.add(particles);
+
+// MODEL
+
+const loader = new GLTFLoader();
+
+let hunter;
+
+loader.load(
+
+"./models/sung/source/sung S solo leveling.glb",
+
+function(gltf){
+
+hunter = gltf.scene;
+
+hunter.scale.set(2.2,2.2,2.2);
+
+hunter.position.set(-10,-3,0);
+
+hunter.visible = false;
+
+hunter.traverse((obj)=>{
+
+if(obj.isMesh){
+
+obj.castShadow = true;
+
+obj.receiveShadow = true;
+
+}
+
+});
+
+scene.add(hunter);
+
+}
+
+);
+
+// ANIMATE
+
+function animate(){
+
+requestAnimationFrame(animate);
+
+const time = Date.now() * 0.001;
+
+aura.scale.set(
+1 + Math.sin(time*2)*0.08,
+1 + Math.sin(time*2)*0.08,
+1 + Math.sin(time*2)*0.08
+);
+
+aura.rotation.y += 0.01;
+
+aura2.rotation.y -= 0.015;
+
+particles.rotation.y += 0.002;
+
+if(hunter){
+
+aura.position.copy(hunter.position);
+
+aura2.position.copy(hunter.position);
+
+particles.position.copy(hunter.position);
+
+}
+
+renderer.render(scene,camera);
+
+}
+
+animate();
+
+// DIALOGUES
 
 const dialogues = [
 
-"Wake up hunter...",
+"Wake up hunter.",
 
-"Boards won't clear themselves.",
+"Your mission is waiting.",
 
-"Your rivals are studying right now.",
+"Do not waste your potential.",
 
-"Arise and continue learning.",
+"Move forward and grow stronger.",
 
-"Every minute matters.",
-
-"Discipline creates toppers."
+"The system is watching you."
 
 ];
 
-function resetIdle(){
+// VOICE
 
-idleTime = 0;
+function speakDialogue(){
 
-document.getElementById("idlePopup")
-.style.display = "none";
-
-}
-
-window.onload = resetIdle;
-
-document.onmousemove = resetIdle;
-
-document.onkeypress = resetIdle;
-
-document.onclick = resetIdle;
-
-document.ontouchstart = resetIdle;
-
-// CHECK EVERY MINUTE
-
-setInterval(()=>{
-
-idleTime++;
-
-if(idleTime >= 1){
-
-showIdlePopup();
-
-}
-
-},10000);
-
-// SHOW POPUP
-
-function showIdlePopup(){
-
-const popup =
-document.getElementById("idlePopup");
-
-popup.style.display = "flex";
-
-// RANDOM DIALOGUE
-
-let random =
+const random =
 dialogues[
 Math.floor(Math.random()*dialogues.length)
 ];
 
-document.getElementById("animeDialogue")
-.innerText = random;
-
-// VOICE
-
 const speech =
 new SpeechSynthesisUtterance(random);
 
-speech.volume = 1;
+speech.pitch = 0.7;
 
 speech.rate = 0.9;
 
-speech.pitch = 0.8;
+speech.volume = 1;
 
 speech.lang = "en-US";
 
@@ -1072,83 +1238,133 @@ speechSynthesis.speak(speech);
 
 }
 
-// CLOSE POPUP
+// ENTRY
 
-window.closeIdlePopup = function(){
+function showHunter(){
 
-document.getElementById("idlePopup")
-.style.display = "none";
+if(!hunter) return;
 
-idleTime = 0;
+hunter.visible = true;
+
+let pos = -10;
+
+const walk = setInterval(()=>{
+
+pos += 0.06;
+
+hunter.position.x = pos;
+
+hunter.rotation.y = 0.3;
+
+if(pos >= -1.5){
+
+clearInterval(walk);
+
+speakDialogue();
+
+setTimeout(()=>{
+
+hideHunter();
+
+},7000);
 
 }
 
+},16);
+
+}
+
+// EXIT
+
+function hideHunter(){
+
+let pos = hunter.position.x;
+
+const exit = setInterval(()=>{
+
+pos += 0.07;
+
+hunter.position.x = pos;
+
+if(pos >= 10){
+
+clearInterval(exit);
+
+hunter.visible = false;
+
+hunter.position.x = -10;
+
+}
+
+},16);
+
+}
+
+// IDLE SYSTEM
+
+let idleTimer;
+
+function resetIdle(){
+
+clearTimeout(idleTimer);
+
+if(hunter){
+
+hunter.visible = false;
+
+hunter.position.x = -10;
+
+}
+
+idleTimer = setTimeout(()=>{
+
+showHunter();
+
+},15000);
+
+}
+
+// ACTIVITY DETECT
+
+[
+"click",
+"touchstart",
+"mousemove",
+"keydown",
+"scroll"
+].forEach(event=>{
+
+window.addEventListener(
+event,
+resetIdle
+);
+
+});
+
+resetIdle();
+
+// RESIZE
+
+window.addEventListener(
+"resize",
+()=>{
+
+camera.aspect =
+window.innerWidth/window.innerHeight;
+
+camera.updateProjectionMatrix();
+
+renderer.setSize(
+window.innerWidth,
+window.innerHeight
+);
+
+}
+);
+
 </script>
 
-<div id="idlePopup" style="
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.92);
-display:none;
-justify-content:center;
-align-items:center;
-z-index:999999;
-flex-direction:column;
-padding:20px;
-text-align:center;
-">
-
-<img
-src="https://i.imgur.com/8Km9tLL.png"
-style="
-width:220px;
-max-width:80%;
-border-radius:20px;
-box-shadow:0 0 30px #7d5fff;
-">
-
-<h1 style="
-margin-top:25px;
-font-size:32px;
-color:white;
-">
-
-🗡️ Wake Up Hunter
-
-</h1>
-
-<p id="animeDialogue" style="
-margin-top:15px;
-font-size:20px;
-color:#cfcfcf;
-max-width:500px;
-line-height:1.6;
-">
-
-Boards won’t clear themselves...
-
-</p>
-
-<button onclick="closeIdlePopup()" style="
-margin-top:30px;
-padding:16px 28px;
-border:none;
-border-radius:12px;
-background:#7d5fff;
-color:white;
-font-size:18px;
-font-weight:bold;
-cursor:pointer;
-">
-
-Continue Studying
-
-</button>
-
-</div>
+</script>
 
 </body>
 </html>
