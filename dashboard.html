@@ -983,7 +983,172 @@ window.location.href = "index.html";
 
 }
 
+// IDLE DETECTION SYSTEM
+
+let idleTime = 0;
+
+const dialogues = [
+
+"Wake up hunter...",
+
+"Boards won't clear themselves.",
+
+"Your rivals are studying right now.",
+
+"Arise and continue learning.",
+
+"Every minute matters.",
+
+"Discipline creates toppers."
+
+];
+
+function resetIdle(){
+
+idleTime = 0;
+
+document.getElementById("idlePopup")
+.style.display = "none";
+
+}
+
+window.onload = resetIdle;
+
+document.onmousemove = resetIdle;
+
+document.onkeypress = resetIdle;
+
+document.onclick = resetIdle;
+
+document.ontouchstart = resetIdle;
+
+// CHECK EVERY MINUTE
+
+setInterval(()=>{
+
+idleTime++;
+
+if(idleTime >= 1){
+
+showIdlePopup();
+
+}
+
+},10000);
+
+// SHOW POPUP
+
+function showIdlePopup(){
+
+const popup =
+document.getElementById("idlePopup");
+
+popup.style.display = "flex";
+
+// RANDOM DIALOGUE
+
+let random =
+dialogues[
+Math.floor(Math.random()*dialogues.length)
+];
+
+document.getElementById("animeDialogue")
+.innerText = random;
+
+// VOICE
+
+const speech =
+new SpeechSynthesisUtterance(random);
+
+speech.volume = 1;
+
+speech.rate = 0.9;
+
+speech.pitch = 0.8;
+
+speech.lang = "en-US";
+
+speechSynthesis.speak(speech);
+
+}
+
+// CLOSE POPUP
+
+window.closeIdlePopup = function(){
+
+document.getElementById("idlePopup")
+.style.display = "none";
+
+idleTime = 0;
+
+}
+
 </script>
+
+<div id="idlePopup" style="
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.92);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:999999;
+flex-direction:column;
+padding:20px;
+text-align:center;
+">
+
+<img
+src="https://i.imgur.com/8Km9tLL.png"
+style="
+width:220px;
+max-width:80%;
+border-radius:20px;
+box-shadow:0 0 30px #7d5fff;
+">
+
+<h1 style="
+margin-top:25px;
+font-size:32px;
+color:white;
+">
+
+🗡️ Wake Up Hunter
+
+</h1>
+
+<p id="animeDialogue" style="
+margin-top:15px;
+font-size:20px;
+color:#cfcfcf;
+max-width:500px;
+line-height:1.6;
+">
+
+Boards won’t clear themselves...
+
+</p>
+
+<button onclick="closeIdlePopup()" style="
+margin-top:30px;
+padding:16px 28px;
+border:none;
+border-radius:12px;
+background:#7d5fff;
+color:white;
+font-size:18px;
+font-weight:bold;
+cursor:pointer;
+">
+
+Continue Studying
+
+</button>
+
+</div>
 
 </body>
 </html>

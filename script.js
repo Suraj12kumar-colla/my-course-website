@@ -116,11 +116,25 @@ let oldDevice = userSnap.data().deviceId;
 
 if(oldDevice && oldDevice !== deviceId){
 
-alert("Account already active on another device");
+let allowReset = confirm(
+"Previous session detected.\n\nClick OK to continue on this device."
+);
+
+if(!allowReset){
 
 await signOut(auth);
 
 return;
+
+}
+
+// UPDATE NEW DEVICE
+
+await updateDoc(userRef,{
+
+deviceId:deviceId
+
+});
 
 }
 
